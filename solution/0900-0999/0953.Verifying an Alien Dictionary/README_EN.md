@@ -114,7 +114,7 @@ Claude:
   But ["ab", "ba", "bc"] is correctly sorted. The pair ("ab", "ba") was already resolved at column 0 — the column 1 comparison is invalid.
 
   A correct approach is to compare adjacent word pairs directly:
-
+```
   def isAlienSorted(self, words, order):
       m = {c: i for i, c in enumerate(order)}
       for a, b in zip(words, words[1:]):
@@ -126,6 +126,7 @@ Claude:
               if m[a[i]] > m[b[i]]:
                   return False
       return True
+```
 
 #### Java
 
