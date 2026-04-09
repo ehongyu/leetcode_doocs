@@ -88,6 +88,45 @@ class Solution:
         return True
 ```
 
+Claude:
+
+  Algorithm
+
+  1. Build a rank map: m maps each character to its position in the alien alphabet.
+  2. Scan character positions left to right (columns 0–19, the max word length):
+    - For each column i, iterate through all words top-to-bottom.
+    - curr = rank of the i-th character, or -1 if the word is too short (so shorter words sort first).
+    - prev > curr: previous word should come after the current one → not sorted, return False.
+    - prev == curr: this pair is still tied, can't confirm order yet → set valid = False.
+    - prev < curr (implicit): this pair is correctly ordered at this column.
+    - If valid remains True after scanning all words, every consecutive pair has been strictly resolved → return True early.
+  3. If all 20 columns are exhausted, return True (all words are identical or fully verified).
+
+  Bug
+
+  This algorithm is incorrect. It compares all consecutive pairs at every column, but pairs already resolved at earlier columns should be skipped.
+
+  Counterexample: words = ["ab", "ba", "bc"], standard order.
+
+  - Column 0: [a, b, b] — pair ("ab","ba") resolved (a < b), pair ("ba","bc") tied → continue
+  - Column 1: [b, a, c] — compares "ab" vs "ba" again, sees b > a → returns False
+
+  But ["ab", "ba", "bc"] is correctly sorted. The pair ("ab", "ba") was already resolved at column 0 — the column 1 comparison is invalid.
+
+  A correct approach is to compare adjacent word pairs directly:
+
+  def isAlienSorted(self, words, order):
+      m = {c: i for i, c in enumerate(order)}
+      for a, b in zip(words, words[1:]):
+          for i in range(len(a)):
+              if i >= len(b):      # "apple" > "app"
+                  return False
+              if m[a[i]] < m[b[i]]:
+                  break
+              if m[a[i]] > m[b[i]]:
+                  return False
+      return True
+
 #### Java
 
 ```java
